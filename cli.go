@@ -23,9 +23,9 @@ func printCards(cards []Card, doPrintNum bool) {
 	if numberOfCards == 0 {
 		return
 	}
-	fmt.Printf("\nn. Name  \tDmg\tBlc\tEffects\n")
+	fmt.Printf("\nn. Name  \tCost\tDmg\tBlc\tEffects\n")
 	for i, card := range cards {
-		fmt.Printf("%d. %s\t%d\t%d\t%s\n", i+1, card.name, card.damage, card.block, genEffectString(card))
+		fmt.Printf("%d. %s\t%d\t%d\t%d\t%s\n", i+1, card.name, card.cost, card.damage, card.block, genEffectString(card))
 	}
 }
 
@@ -56,8 +56,11 @@ func printTurnPrefix(player Player, enemy Enemy) {
 	}
 }
 
-func printTurnSuffix(player Player, enemy Enemy) {
+func printDrawDiscardNumber(player Player) {
 	fmt.Printf("Draw pile: %d cards.\nDiscard pile: %d cards.\n", len(player.drawPile), len(player.discardPile))
+}
+
+func printTurnSuffix(player Player, enemy Enemy) {
 	fmt.Printf("\nHand: %d cards.", len(player.hand))
 	printCards(player.hand, false)
 }

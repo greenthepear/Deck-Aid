@@ -23,6 +23,16 @@ func (p *Player) refillDrawPile() {
 	p.discardPile = nil
 }
 
+func (p *Player) moveFromHandToDiscardPileByIndex(index int) {
+	p.discardPile = append(p.discardPile, p.hand[index])
+	p.hand = removeElement(p.hand, index)
+}
+
+func (p *Player) discardHand() {
+	p.discardPile = append(p.discardPile, p.hand...)
+	p.hand = nil
+}
+
 func (p *Player) draw(number int) {
 	if number > len(p.deck) {
 		number = len(p.deck)
@@ -40,4 +50,14 @@ func (p *Player) draw(number int) {
 		p.hand = append(p.hand, p.drawPile[randIndex])
 		p.drawPile = removeElement(p.drawPile, randIndex)
 	}
+}
+
+func (p *Player) playCard(card Card, e *Enemy) {
+	if card.damage != 0 {
+		e.hp -= card.damage
+		fmt.Printf("Enemy attacked for %d! (%d/%d)\n", card.damage, e.hp, e.hpMax)
+	}
+
+	p.energy -= card.cost
+	//TODO: Blocks and weakness stuff
 }

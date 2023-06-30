@@ -32,13 +32,69 @@ func combatStart(player *Player, enemy *Enemy) {
 	player.drawPile = player.deck
 }
 
+func cardInput(player *Player, enemy *Enemy) bool {
+	invalidChoice := true
+	var chosenCard int
+	for invalidChoice {
+		fmt.Printf("You have -%d- energy left. Choose a card to play, 0 to end turn: ", player.energy)
+		_, err := fmt.Scanf("%d", &chosenCard)
+		if err != nil {
+			fmt.Printf("Invalid input!\n")
+			continue
+		}
+
+		if chosenCard == 0 {
+			fmt.Print("Ending turn...\n")
+			return true
+		}
+
+		if chosenCard < 1 || chosenCard > len(player.hand) {
+			fmt.Printf("Not a card!\n")
+			continue
+		}
+
+		cardToPlay := player.hand[chosenCard-1]
+		if cardToPlay.cost > player.energy {
+			fmt.Printf("Not enough energy to play %s (%d)...\n", cardToPlay.name, cardToPlay.cost)
+			continue
+		}
+		fmt.Printf("Playing %s...\n", cardToPlay.name)
+		player.playCard(cardToPlay, enemy)
+		if enemy.hp <= 0 {
+			return true
+		}
+		player.moveFromHandToDiscardPileByIndex(chosenCard - 1)
+		invalidChoice = false
+		printTurnSuffix(*player, *enemy)
+	}
+	return false
+}
+
 func doTurn(player *Player, enemy *Enemy) {
 	printTurnPrefix(*player, *enemy)
 	fmt.Printf("Your turn starts, drawing %d cards...\n\n", player.drawNumber)
 	player.draw(player.drawNumber)
+	printDrawDiscardNumber(*player)
 	printTurnSuffix(*player, *enemy)
+	player.energy = player.energyMax
+	for {
+		if cardInput(player, enemy) {
+			player.discardHand()
+			break
+		}
+	}
+}
 
-	//Player input here
+func gameLoop(player *Player, enemy *Enemy) {
+	combatStart(player, enemy)
+
+	for {
+		if enemy.hp <= 0 {
+			fmt.Printf("%s has been defeated!\n", enemy.name)
+			return
+		}
+		doTurn(player, enemy)
+	}
 }
 
 func createCardSliceByReferanceIntSlice(cardTypes []Card, cardIntSlice []int) []Card {
@@ -82,6 +138,5 @@ func main() {
 		effects: Effect{0, 0},
 	}
 
-	combatStart(&player, &enemy)
-	doTurn(&player, &enemy)
+	gameLoop(&player, &enemy)
 }
