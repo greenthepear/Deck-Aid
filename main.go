@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
 type Card struct {
 	name    string
 	cost    int
@@ -13,18 +19,6 @@ type Effect struct {
 	vulnerable int
 }
 
-type Player struct {
-	hp          int
-	hpMax       int
-	energy      int
-	energyMax   int
-	effects     Effect
-	deck        []Card
-	drawPile    []Card
-	discardPile []Card
-	hand        []Card
-}
-
 type Enemy struct {
 	name    string
 	hp      int
@@ -32,10 +26,6 @@ type Enemy struct {
 	intent  int
 	damage  int
 	effects Effect
-}
-
-func (p *Player) draw(numOfCards int) {
-
 }
 
 func combatStart(player *Player, enemy *Enemy) {
@@ -51,6 +41,8 @@ func createCardSliceByReferanceIntSlice(cardTypes []Card, cardIntSlice []int) []
 }
 
 func main() {
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	cards := []Card{
 		{"Strike", 1, 7, 0, Effect{0, 0}},
 		{"Duck", 1, 0, 5, Effect{0, 0}},
@@ -78,5 +70,6 @@ func main() {
 		effects: Effect{0, 0},
 	}
 	combatStart(&player, &enemy)
-
+	player.draw(5)
+	fmt.Print(player.hand)
 }
