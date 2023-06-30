@@ -1,6 +1,9 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type Player struct {
 	hp          int
@@ -12,6 +15,7 @@ type Player struct {
 	drawPile    []Card
 	discardPile []Card
 	hand        []Card
+	drawNumber  int
 }
 
 func (p *Player) refillDrawPile() {
@@ -20,14 +24,19 @@ func (p *Player) refillDrawPile() {
 }
 
 func (p *Player) draw(number int) {
+	if number > len(p.deck) {
+		number = len(p.deck)
+	}
+
 	for i := 0; i < number; i++ {
 		drawPileLen := len(p.drawPile)
 		if drawPileLen == 0 {
+			fmt.Printf("Draw pile empty, shuffling from discard pile...\n")
 			p.refillDrawPile()
 			drawPileLen = len(p.drawPile)
 		}
 
-		randIndex := rand.Intn(drawPileLen + 1)
+		randIndex := rand.Intn(drawPileLen)
 		p.hand = append(p.hand, p.drawPile[randIndex])
 		p.drawPile = removeElement(p.drawPile, randIndex)
 	}
