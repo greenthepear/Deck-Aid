@@ -15,21 +15,21 @@ type Card struct {
 }
 
 type Effect struct {
-	weaken     int
-	vulnerable int
+	impair int //Makes do less damage
+	weaken int //Makes take more damage
 }
 
-type Enemy struct {
-	name    string
-	hp      int
-	hpMax   int
-	intent  int
-	damage  int
-	effects Effect
+func (effect Effect) totalEffects() int {
+	return effect.impair + effect.weaken
+}
+
+func (effect Effect) doesHaveAnyEffect() bool {
+	return effect.totalEffects() > 0
 }
 
 func combatStart(player *Player, enemy *Enemy) {
 	player.drawPile = player.deck
+	enemy.queueIndex = 0
 }
 
 func cardInput(player *Player, enemy *Enemy) bool {
@@ -44,7 +44,7 @@ func cardInput(player *Player, enemy *Enemy) bool {
 		}
 
 		if chosenCard == 0 {
-			fmt.Print("Ending turn...\n")
+			fmt.Print("Ending turn...\n\n\n\n")
 			return true
 		}
 
@@ -85,6 +85,12 @@ func doTurn(player *Player, enemy *Enemy) {
 	}
 }
 
+/*
+func doEnemyTurn(player *Player, enemy *Enemy) {
+
+}
+*/
+
 func gameLoop(player *Player, enemy *Enemy) {
 	combatStart(player, enemy)
 
@@ -94,6 +100,7 @@ func gameLoop(player *Player, enemy *Enemy) {
 			return
 		}
 		doTurn(player, enemy)
+		//doEnemyTurn(player, enemy)
 	}
 }
 
@@ -124,6 +131,7 @@ func main() {
 		hpMax:      50,
 		energy:     0,
 		energyMax:  3,
+		block:      0,
 		effects:    Effect{0, 0},
 		deck:       createCardSliceByReferanceIntSlice(cards, startingDeck),
 		drawNumber: 5,
@@ -133,10 +141,17 @@ func main() {
 		name:    "Duende",
 		hp:      20,
 		hpMax:   20,
-		intent:  0,
-		damage:  5,
+		block:   0,
 		effects: Effect{0, 0},
+		//Attack 2x4, Block 12, Attack 9, Curse with both for 2
+		actionQueue: []EnemyAction{
+			{attackDamage: 4, attackMultiplier: 2},
+			{addBlock: 12},
+			{attackDamage: 9},
+			{curse: Effect{2, 2}},
+		},
+		randomizeQueue: false,
+		queueIndex:     0,
 	}
-
 	gameLoop(&player, &enemy)
 }

@@ -3,14 +3,14 @@ package main
 
 import "fmt"
 
-func genEffectString(card Card) string {
+func genEffectString(effect Effect) string {
 	r := ""
-	if card.effects.vulnerable > 0 {
-		r += "Vulnerable " + fmt.Sprint(card.effects.vulnerable) + " "
+	if effect.impair > 0 {
+		r += "Impair " + fmt.Sprint(effect.impair) + " "
 	}
 
-	if card.effects.weaken > 0 {
-		r += "Weaken " + fmt.Sprint(card.effects.weaken) + " "
+	if effect.weaken > 0 {
+		r += "Weaken " + fmt.Sprint(effect.weaken) + " "
 	}
 	return r
 }
@@ -25,11 +25,12 @@ func printCards(cards []Card, doPrintNum bool) {
 	}
 	fmt.Printf("\nn. Name  \tCost\tDmg\tBlc\tEffects\n")
 	for i, card := range cards {
-		fmt.Printf("%d. %s\t%d\t%d\t%d\t%s\n", i+1, card.name, card.cost, card.damage, card.block, genEffectString(card))
+		fmt.Printf("%d. %s\t%d\t%d\t%d\t%s\n", i+1, card.name, card.cost, card.damage, card.block, genEffectString(card.effects))
 	}
 }
 
-func (p Player) printAllCards(doPrintDeck bool) { //for debugging
+//lint:ignore U1000 Debugging function, ignore being unused
+func (p Player) printAllCards(doPrintDeck bool) {
 	if doPrintDeck {
 		fmt.Printf("\nDECK - ")
 		printCards(p.deck, true)
@@ -46,13 +47,39 @@ func (p Player) printAllCards(doPrintDeck bool) { //for debugging
 }
 
 func printTurnPrefix(player Player, enemy Enemy) {
-	fmt.Printf("Your hp: (%d/%d)\n", player.hp, player.hpMax)
-	fmt.Printf("The foe %s (%d/%d)", enemy.name, enemy.hp, enemy.hpMax)
-	switch enemy.intent {
-	case 0:
-		fmt.Printf(" is going to attack you!\n")
-	default:
-		fmt.Printf(" is doing something you have no clue about.\n")
+	fmt.Printf("Your hp: (%d/%d)", player.hp, player.hpMax)
+	if player.block != 0 {
+		fmt.Printf(" + %d block", player.block)
+	}
+	if player.effects.doesHaveAnyEffect() {
+		fmt.Printf("\nEffects applied on you: %s", genEffectString(player.effects))
+	}
+
+	fmt.Printf("\nThe foe %s (%d/%d)", enemy.name, enemy.hp, enemy.hpMax)
+	if enemy.block != 0 {
+		fmt.Printf(" + %d block", enemy.block)
+	}
+	if enemy.effects.doesHaveAnyEffect() {
+		fmt.Printf("\nEffects applied the enemy: %s", genEffectString(enemy.effects))
+	}
+	fmt.Print("\n")
+
+	currentEnemyAction := enemy.actionQueue[enemy.queueIndex]
+	if currentEnemyAction.attackDamage != 0 {
+		fmt.Printf("The enemy is intending to attack you! Damage: ")
+		if currentEnemyAction.attackMultiplier > 1 {
+			fmt.Printf("%dx%d\n", currentEnemyAction.attackMultiplier, currentEnemyAction.attackDamage)
+		} else {
+			fmt.Printf("%d\n", currentEnemyAction.attackDamage)
+		}
+	}
+
+	if currentEnemyAction.addBlock != 0 {
+		fmt.Printf("The enemy is intending to apply block. Blc: %d\n", currentEnemyAction.addBlock)
+	}
+
+	if currentEnemyAction.curse.impair != 0 || currentEnemyAction.curse.weaken != 0 {
+		fmt.Printf("The enemy is intending to curse you! Effects: %s", genEffectString(currentEnemyAction.curse))
 	}
 }
 
