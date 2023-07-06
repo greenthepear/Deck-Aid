@@ -33,9 +33,8 @@ func combatStart(player *Player, enemy *Enemy) {
 }
 
 func cardInput(player *Player, enemy *Enemy) bool {
-	invalidChoice := true
 	var chosenCard int
-	for invalidChoice {
+	for {
 		fmt.Printf("You have -%d- energy left. Choose a card to play, 0 to end turn: ", player.energy)
 		_, err := fmt.Scanf("%d", &chosenCard)
 		if err != nil {
@@ -44,7 +43,7 @@ func cardInput(player *Player, enemy *Enemy) bool {
 		}
 
 		if chosenCard == 0 {
-			fmt.Print("Ending turn...\n\n\n\n")
+			fmt.Print("Ending turn...\n\n")
 			return true
 		}
 
@@ -64,13 +63,19 @@ func cardInput(player *Player, enemy *Enemy) bool {
 			return true
 		}
 		player.moveFromHandToDiscardPileByIndex(chosenCard - 1)
-		invalidChoice = false
 		printTurnSuffix(*player, *enemy)
+		return false
 	}
-	return false
+}
+
+func doEnemyTurn(player *Player, enemy *Enemy) {
+	fmt.Printf("Enemy turn starts!\n")
+	enemy.doNextAction(player)
+	enemy.increaseQueueIndex()
 }
 
 func doTurn(player *Player, enemy *Enemy) {
+	player.decreaseDebuffEffects()
 	printTurnPrefix(*player, *enemy)
 	fmt.Printf("Your turn starts, drawing %d cards...\n\n", player.drawNumber)
 	player.draw(player.drawNumber)
@@ -85,22 +90,20 @@ func doTurn(player *Player, enemy *Enemy) {
 	}
 }
 
-/*
-func doEnemyTurn(player *Player, enemy *Enemy) {
-
-}
-*/
-
 func gameLoop(player *Player, enemy *Enemy) {
 	combatStart(player, enemy)
 
 	for {
+		if player.hp <= 0 {
+			fmt.Printf("You have been defeated...\n")
+			return
+		}
 		if enemy.hp <= 0 {
 			fmt.Printf("%s has been defeated!\n", enemy.name)
 			return
 		}
 		doTurn(player, enemy)
-		//doEnemyTurn(player, enemy)
+		doEnemyTurn(player, enemy)
 	}
 }
 

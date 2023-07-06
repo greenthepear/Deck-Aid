@@ -53,6 +53,16 @@ func (p *Player) draw(number int) {
 	}
 }
 
+func (p *Player) decreaseDebuffEffects() {
+	if p.effects.impair > 0 {
+		p.effects.impair--
+	}
+
+	if p.effects.weaken > 0 {
+		p.effects.weaken--
+	}
+}
+
 func (p *Player) playCard(card Card, e *Enemy) {
 	if card.damage != 0 {
 		dmg := card.damage
@@ -60,8 +70,12 @@ func (p *Player) playCard(card Card, e *Enemy) {
 			fmt.Printf("As you are impaired, the damage is decreased by 25%%.\n")
 			dmg = int(float64(dmg) * 0.75) //TODO: Make 0.75 a global thing
 		}
+		if e.effects.weaken != 0 {
+			fmt.Printf("As the enemy is weakened, the damage is increased by 30%%.\n")
+			dmg = int(float64(dmg) * 1.30)
+		}
 		e.hp -= dmg
-		fmt.Printf("Enemy attacked for %d! (%d/%d)\n", card.damage, e.hp, e.hpMax)
+		fmt.Printf("Enemy attacked for %d! (%d/%d)\n", dmg, e.hp, e.hpMax)
 	}
 
 	if card.block != 0 {
