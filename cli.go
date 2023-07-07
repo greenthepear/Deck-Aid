@@ -47,7 +47,7 @@ func (p Player) printAllCards(doPrintDeck bool) {
 }
 
 func printTurnPrefix(player Player, enemy Enemy) {
-	fmt.Printf("Your hp: (%d/%d)", player.hp, player.hpMax)
+	fmt.Printf("Your hp: %s", player.genHPstring())
 	if player.block != 0 {
 		fmt.Printf(" + %d block", player.block)
 	}

@@ -28,10 +28,10 @@ func (e *Enemy) doHit(baseDamage int, p *Player) {
 	dmg := baseDamage
 	if p.effects.weaken != 0 {
 		//fmt.Printf("As you are weakened, the damage is increased by 30%%.\n")
-		dmg = int(float64(baseDamage) * 1.30)
+		dmg = int(float64(baseDamage) * weakenMultiplier)
 	}
-	p.hp -= dmg
-	fmt.Printf("You got hit for %d! (%d/%d)\n", dmg, p.hp, p.hpMax)
+	p.takeHit(dmg)
+
 }
 
 func (e *Enemy) increaseQueueIndex() {

@@ -14,11 +14,6 @@ type Card struct {
 	effects Effect
 }
 
-type Effect struct {
-	impair int //Makes do less damage
-	weaken int //Makes take more damage
-}
-
 func (effect Effect) totalEffects() int {
 	return effect.impair + effect.weaken
 }
