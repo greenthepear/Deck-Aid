@@ -14,14 +14,6 @@ type Card struct {
 	effects Effect
 }
 
-func (effect Effect) totalEffects() int {
-	return effect.impair + effect.weaken
-}
-
-func (effect Effect) doesHaveAnyEffect() bool {
-	return effect.totalEffects() > 0
-}
-
 func combatStart(player *Player, enemy *Enemy) {
 	player.drawPile = player.deck
 	enemy.queueIndex = 0
@@ -65,12 +57,14 @@ func cardInput(player *Player, enemy *Enemy) bool {
 
 func doEnemyTurn(player *Player, enemy *Enemy) {
 	fmt.Printf("Enemy turn starts!\n")
+	enemy.health.removeBlock()
 	enemy.doNextAction(player)
 	enemy.increaseQueueIndex()
 }
 
 func doTurn(player *Player, enemy *Enemy) {
 	player.decreaseDebuffEffects()
+	player.health.removeBlock()
 	printTurnPrefix(*player, *enemy)
 	fmt.Printf("Your turn starts, drawing %d cards...\n\n", player.drawNumber)
 	player.draw(player.drawNumber)
@@ -93,16 +87,16 @@ func gameLoop(player *Player, enemy *Enemy) {
 			fmt.Printf("You have been defeated...\n")
 			return
 		}
+		doTurn(player, enemy)
 		if enemy.health.hp <= 0 {
-			fmt.Printf("%s has been defeated!\n", enemy.name)
+			fmt.Printf("\n%s has been defeated!\n", enemy.name)
 			return
 		}
-		doTurn(player, enemy)
 		doEnemyTurn(player, enemy)
 	}
 }
 
-func createCardSliceByReferanceIntSlice(cardTypes []Card, cardIntSlice []int) []Card {
+func createCardSliceByReferanceIntSlice(cardTypes []Card, cardIntSlice []int) []Card { //is it descriptive enough?
 	rSlice := make([]Card, len(cardIntSlice))
 	for i, cardNumber := range cardIntSlice {
 		rSlice[i] = cardTypes[cardNumber]

@@ -2,7 +2,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 )
 
@@ -44,18 +43,25 @@ func (e *Enemy) increaseQueueIndex() {
 func (e *Enemy) doNextAction(p *Player) {
 	action := e.actionQueue[e.queueIndex]
 
-	if action.attackDamage != 0 {
+	if action.attackDamage != 0 { //Attacking
+		//attackMultiplier = 0 means to not multiply the attack, so 1 is the same thing
 		multiplier := 1
 		if action.attackMultiplier != 0 {
 			multiplier = action.attackMultiplier
 		}
 
-		if p.effects.weaken != 0 {
-			fmt.Printf("As you are weakened, the damage is increased by 30%%.\n")
-		}
+		updatedDamage := calcDmgWithEffects(action.attackDamage, e.effects, p.effects, false)
 
 		for i := 0; i < multiplier; i++ {
-			e.doHit(action.attackDamage, p)
+			e.doHit(updatedDamage, p)
 		}
+	}
+
+	if action.addBlock != 0 { //Adding block
+		e.health.addBlock(action.addBlock)
+	}
+
+	if action.curse.doesHaveAnyEffect() {
+		action.curse.applyEffectsOn(&p.effects)
 	}
 }
