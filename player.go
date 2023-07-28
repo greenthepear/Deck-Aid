@@ -6,11 +6,9 @@ import (
 )
 
 type Player struct {
-	hp          int
-	hpMax       int
+	health      Health
 	energy      int
 	energyMax   int
-	block       int
 	effects     Effect
 	deck        []Card
 	drawPile    []Card
@@ -74,12 +72,12 @@ func (p *Player) playCard(card Card, e *Enemy) {
 			fmt.Printf("As the enemy is weakened, the damage is increased by %d%%.\n", int((weakenMultiplier-1)*100))
 			dmg = int(float64(dmg) * weakenMultiplier)
 		}
-		e.hp -= dmg
-		fmt.Printf("Enemy attacked for %d! (%d/%d)\n", dmg, e.hp, e.hpMax)
+		e.health.hp -= dmg
+		fmt.Printf("Enemy attacked for %d! (%d/%d)\n", dmg, e.health.hp, e.health.hpMax)
 	}
 
 	if card.block != 0 {
-		p.block += card.block
+		p.health.block += card.block
 		fmt.Printf("Block applied: %d. %s\n", card.block, p.genHPstring())
 	}
 
@@ -97,30 +95,30 @@ func (p *Player) playCard(card Card, e *Enemy) {
 }
 
 func (p Player) genHPstring() string {
-	r := fmt.Sprintf("(%d/%d)", p.hp, p.hpMax)
-	if p.block > 0 {
-		r += fmt.Sprintf(" + %d block", p.block)
+	r := fmt.Sprintf("(%d/%d)", p.health.hp, p.health.hpMax)
+	if p.health.block > 0 {
+		r += fmt.Sprintf(" + %d block", p.health.block)
 	}
 	return r
 }
 
 func (p *Player) takeHit(dmg int) {
 	hpLoss := dmg
-	if p.block > 0 {
-		blockOriginal := p.block
+	if p.health.block > 0 {
+		blockOriginal := p.health.block
 		fmt.Printf("Blocked ")
-		p.block -= dmg
-		if p.block <= 0 {
+		p.health.block -= dmg
+		if p.health.block <= 0 {
 			fmt.Printf("%d damage! Block broken! ", blockOriginal)
-			hpLoss = -p.block
-			p.block = 0
+			hpLoss = -p.health.block
+			p.health.block = 0
 		} else {
-			fmt.Printf("%d damage! ", blockOriginal-p.block)
+			fmt.Printf("%d damage! ", blockOriginal-p.health.block)
 			hpLoss = 0
 		}
 	}
 
-	p.hp -= hpLoss
+	p.health.hp -= hpLoss
 
 	fmt.Printf("You got hit for %d! %s\n", hpLoss, p.genHPstring())
 }

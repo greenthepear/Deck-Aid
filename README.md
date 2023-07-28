@@ -10,4 +10,4 @@ TODO:
 - Lore?
 
 Notes:
-- Because the health system works (hp and blocking) exactly the same for the enemy and player, it might be a good idea to make the health a struct to avoid so much redundancy, maybe even damage for that matter.
+- Because the health system works (hp and blocking) exactly the same for the enemy and player, it might be a good idea to make the health a struct to avoid so much redundancy, maybe even damage for that matter. [Currently WIP]

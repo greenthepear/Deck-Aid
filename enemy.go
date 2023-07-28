@@ -8,9 +8,7 @@ import (
 
 type Enemy struct {
 	name           string
-	hp             int
-	hpMax          int
-	block          int
+	health         Health
 	effects        Effect
 	actionQueue    []EnemyAction
 	randomizeQueue bool

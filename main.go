@@ -54,7 +54,7 @@ func cardInput(player *Player, enemy *Enemy) bool {
 		}
 		fmt.Printf("Playing %s...\n", cardToPlay.name)
 		player.playCard(cardToPlay, enemy)
-		if enemy.hp <= 0 {
+		if enemy.health.hp <= 0 {
 			return true
 		}
 		player.moveFromHandToDiscardPileByIndex(chosenCard - 1)
@@ -89,11 +89,11 @@ func gameLoop(player *Player, enemy *Enemy) {
 	combatStart(player, enemy)
 
 	for {
-		if player.hp <= 0 {
+		if player.health.hp <= 0 {
 			fmt.Printf("You have been defeated...\n")
 			return
 		}
-		if enemy.hp <= 0 {
+		if enemy.health.hp <= 0 {
 			fmt.Printf("%s has been defeated!\n", enemy.name)
 			return
 		}
@@ -125,11 +125,9 @@ func main() {
 	startingDeck := []int{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3}
 
 	player := Player{
-		hp:         50,
-		hpMax:      50,
+		health:     Health{50, 50, 0},
 		energy:     0,
 		energyMax:  3,
-		block:      0,
 		effects:    Effect{0, 0},
 		deck:       createCardSliceByReferanceIntSlice(cards, startingDeck),
 		drawNumber: 5,
@@ -137,9 +135,7 @@ func main() {
 
 	enemy := Enemy{
 		name:    "Duende",
-		hp:      20,
-		hpMax:   20,
-		block:   0,
+		health:  Health{20, 20, 0},
 		effects: Effect{0, 0},
 		//Attack 2x4, Block 12, Attack 9, Curse with both for 2
 		actionQueue: []EnemyAction{

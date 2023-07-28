@@ -48,16 +48,13 @@ func (p Player) printAllCards(doPrintDeck bool) {
 
 func printTurnPrefix(player Player, enemy Enemy) {
 	fmt.Printf("Your hp: %s", player.genHPstring())
-	if player.block != 0 {
-		fmt.Printf(" + %d block", player.block)
-	}
 	if player.effects.doesHaveAnyEffect() {
 		fmt.Printf("\nEffects applied on you: %s", genEffectString(player.effects))
 	}
 
-	fmt.Printf("\nThe foe %s (%d/%d)", enemy.name, enemy.hp, enemy.hpMax)
-	if enemy.block != 0 {
-		fmt.Printf(" + %d block", enemy.block)
+	fmt.Printf("\nThe foe %s (%d/%d)", enemy.name, enemy.health.hp, enemy.health.hpMax)
+	if enemy.health.block != 0 {
+		fmt.Printf(" + %d block", enemy.health.block)
 	}
 	if enemy.effects.doesHaveAnyEffect() {
 		fmt.Printf("\nEffects applied the enemy: %s", genEffectString(enemy.effects))
