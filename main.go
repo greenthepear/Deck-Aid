@@ -23,8 +23,8 @@ func cardInput(player *Player, enemy *Enemy) bool {
 	var chosenCard int
 	for {
 		fmt.Printf("You have -%d- energy left. Choose a card to play, 0 to end turn: ", player.energy)
-		_, err := fmt.Scanf("%d", &chosenCard)
-		if err != nil {
+		n, err := fmt.Scanf("%d", &chosenCard)
+		if err != nil || n < 1 {
 			fmt.Printf("Invalid input!\n")
 			continue
 		}
@@ -63,7 +63,8 @@ func doEnemyTurn(player *Player, enemy *Enemy) {
 }
 
 func doTurn(player *Player, enemy *Enemy) {
-	player.decreaseDebuffEffects()
+	enemy.effects.decreaseDebuffEffects()
+	player.effects.decreaseDebuffEffects()
 	player.health.removeBlock()
 	printTurnPrefix(*player, *enemy)
 	fmt.Printf("Your turn starts, drawing %d cards...\n\n", player.drawNumber)
@@ -84,7 +85,7 @@ func gameLoop(player *Player, enemy *Enemy) {
 
 	for {
 		if player.health.hp <= 0 {
-			fmt.Printf("You have been defeated...\n")
+			fmt.Printf("\nYou have been defeated...\n")
 			return
 		}
 		doTurn(player, enemy)
@@ -105,7 +106,7 @@ func createCardSliceByReferanceIntSlice(cardTypes []Card, cardIntSlice []int) []
 }
 
 func main() {
-	//Commented out for reproductible results
+	//Comment out for reproductible results
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	//rand.New(rand.NewSource(0))
 

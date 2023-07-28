@@ -61,7 +61,7 @@ func (e *Enemy) doNextAction(p *Player) {
 		e.health.addBlock(action.addBlock)
 	}
 
-	if action.curse.doesHaveAnyEffect() {
+	if action.curse.doesHaveAnyEffect() { //Applying effects
 		action.curse.applyEffectsOn(&p.effects)
 	}
 }

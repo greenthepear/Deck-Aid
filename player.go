@@ -51,16 +51,6 @@ func (p *Player) draw(number int) {
 	}
 }
 
-func (p *Player) decreaseDebuffEffects() {
-	if p.effects.impair > 0 {
-		p.effects.impair--
-	}
-
-	if p.effects.weaken > 0 {
-		p.effects.weaken--
-	}
-}
-
 func (p *Player) playCard(card Card, e *Enemy) {
 	if card.damage != 0 {
 		dmg := card.damage

@@ -3,14 +3,15 @@ package main
 
 import "fmt"
 
+// Should these be global or should I make another struct or something?
+
+var impairMultiplier float64 = 0.75
+var weakenMultiplier float64 = 1.30
+
 type Effect struct {
 	impair int //Makes do less damage
 	weaken int //Makes take more damage
 }
-
-// Should these be global or should I make another struct or something?
-var impairMultiplier float64 = 0.75
-var weakenMultiplier float64 = 1.30
 
 type Health struct {
 	hp    int
@@ -59,18 +60,27 @@ func (eff *Effect) applyEffectsOn(targetEffects *Effect) {
 	}
 }
 
+func (eff *Effect) decreaseDebuffEffects() {
+	if eff.impair > 0 {
+		eff.impair--
+	}
+
+	if eff.weaken > 0 {
+		eff.weaken--
+	}
+}
+
 func (h *Health) takeHit(dmg int) int {
 	hpLoss := dmg
 	if h.block > 0 {
 		blockOriginal := h.block
-		fmt.Printf("Blocked ")
 		h.block -= dmg
 		if h.block <= 0 {
-			fmt.Printf("%d damage! Block broken! ", blockOriginal)
+			fmt.Printf("Blocked %d damage! Block broken! ", blockOriginal)
 			hpLoss = -h.block
 			h.block = 0
 		} else {
-			fmt.Printf("%d damage! ", blockOriginal-h.block)
+			fmt.Printf("Blocked %d damage! ", blockOriginal-h.block)
 			hpLoss = 0
 		}
 	}
